@@ -30,7 +30,7 @@ python check_sha256.py
 
 If there are some errors, go back to Step 2. It will re-download only incomplete files.
 
-## Step 5: Create MDS files
+## Step 5: Create MDS files (16 hours)
 
 The `common_crawl` subset is compressed by zstandard.
 
