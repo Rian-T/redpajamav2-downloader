@@ -7,7 +7,7 @@ from multiprocessing.pool import ThreadPool
 import requests
 from tqdm.auto import tqdm
 
-# loggingの設定
+# Logging configuration
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -16,7 +16,7 @@ logging.basicConfig(
 
 
 def download_url(url):
-    # ファイル名はURLの最後の部分を使用します
+    # Use the last part of the URL as the file name
     url_prefix = "https://data.together.xyz/redpajama-data-1T/v1.0.0/"
     assert url.startswith(url_prefix)
     file_name = url[len(url_prefix) :]
@@ -25,11 +25,11 @@ def download_url(url):
     os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
     try:
-        # ダウンロードを試みる前に、既存のファイルをチェックします
+        # Check for existing files before attempting to download
         if os.path.exists(file_name):
             time.sleep(1)
 
-            # ファイルが完全にダウンロードされていることを確認します
+            # Ensure the file is completely downloaded
             with requests.get(url, stream=True, timeout=10.0) as r:
                 r.raise_for_status()
                 total_size = int(r.headers.get("content-length", 0))
@@ -44,10 +44,10 @@ def download_url(url):
                     f"File '{file_name}' already exists, but it's incomplete. Downloading."
                 )
 
-        # URLからデータを取得します
+        # Retrieve data from the URL
         response = requests.get(url, stream=True)
 
-        # ファイルを書き込みます
+        # Write the file
         with open(file_name, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
@@ -68,11 +68,11 @@ def main():
 
     pool = ThreadPool(10)
 
-    # URLごとにdownload_url関数を呼び出します
+    # Call the download_url function for each URL
     dummy = pool.imap_unordered(download_url, urls, chunksize=1)
     dummy = list(tqdm(dummy, total=len(urls)))
 
-    # すべてのタスクが終了するまで待ちます
+    # Wait for all tasks to complete
     pool.close()
     pool.join()
 
