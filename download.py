@@ -17,7 +17,7 @@ logging.basicConfig(
 
 def download_url(url):
     # Use the last part of the URL as the file name
-    url_prefix = "https://data.together.xyz/redpajama-data-1T/v1.0.0/"
+    url_prefix = "https://data.together.xyz/redpajama-data-v2/v1.0.0/"
     assert url.startswith(url_prefix)
     file_name = url[len(url_prefix) :]
 
