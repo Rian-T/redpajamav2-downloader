@@ -42,15 +42,15 @@ def download_url(url, max_retries=5):
                 if result.returncode == 0 and result.stderr:
                     total_size = int(result.stderr.split("Length: ")[1].split(" ")[0])
 
-                if total_size == os.path.getsize(file_name):
-                    logging.info(
-                        f"File '{file_name}' already exists, and it is complete. Skipping download."
-                    )
-                    return True
-                else:
-                    logging.info(
-                        f"File '{file_name}' already exists, but it's incomplete. Downloading."
-                    )
+                    if total_size == os.path.getsize(file_name):
+                        logging.info(
+                            f"File '{file_name}' already exists, and it is complete. Skipping download."
+                        )
+                        return True
+                    else:
+                        logging.info(
+                            f"File '{file_name}' already exists, but it's incomplete. Downloading."
+                        )
 
             # Retrieve data from the URL
             with open("wget.log", "a") as log_file:
@@ -116,7 +116,7 @@ def main():
     while failed_urls and retry_count < max_retries:
         retry_count += 1
         logging.info(f"Retrying {len(failed_urls)} failed downloads with 1 thread. Attempt {retry_count}/{max_retries}.")
-        results = download_urls(failed_urls, 10 - retry_count)
+        results = download_urls(failed_urls, 2)
 
         # Collect remaining failed downloads
         failed_urls = [url for url, success in zip(failed_urls, results) if not success]
