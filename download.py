@@ -95,8 +95,13 @@ def download_urls(urls, num_threads):
     return results
 
 def main():
-    urls = open("fr_urls.txt").readlines()
-    urls = [url.strip() for url in urls]
+    # List of files to read URLs from
+    url_files = ["fr_urls_part_aa", "fr_urls_part_ab"]
+    
+    urls = []
+    for file_name in url_files:
+        with open(file_name, "r") as file:
+            urls.extend([url.strip() for url in file.readlines()])
 
     # Initial download attempt with 64 threads
     results = download_urls(urls, 64)
