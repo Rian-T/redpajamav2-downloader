@@ -21,7 +21,7 @@ def download_url(url, max_retries=5):
     assert url.startswith(url_prefix)
     file_name = url[len(url_prefix) :]
 
-    file_name = os.path.join("../redpajama-data-test/", file_name)
+    file_name = os.path.join("/gpfsscratch/rech/rua/uvb79kr/redpajama-v2", file_name)
     os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
     retries = 0
@@ -104,7 +104,7 @@ def main():
             urls.extend([url.strip() for url in file.readlines()])
 
     # Initial download attempt with 64 threads
-    results = download_urls(urls[10000:], 64)
+    results = download_urls(urls, 2)
 
     # Collect failed downloads
     failed_urls = [url for url, success in zip(urls, results) if not success]
