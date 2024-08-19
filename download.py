@@ -4,9 +4,10 @@ import os
 import time
 from multiprocessing.pool import ThreadPool
 import subprocess
-
+from urllib.parse import urlparse
 import requests
 from tqdm.auto import tqdm
+import http.client
 
 # Logging configuration
 logging.basicConfig(
@@ -34,13 +35,13 @@ def download_url(url, max_retries=5):
                 time.sleep(1)
 
                 # Ensure the file is completely downloaded
-                result = subprocess.run(
-                    ["wget", "--spider", url],
-                    capture_output=True,
-                    text=True
-                )
-                if result.returncode == 0 and result.stderr:
-                    total_size = int(result.stderr.split("Length: ")[1].split(" ")[0])
+                parsed_url = urlparse(url)
+                conn = http.client.HTTPSConnection(parsed_url.netloc)
+                conn.request("HEAD", parsed_url.path)
+                response = conn.getresponse()
+
+                if response.status == 200:
+                    total_size = int(response.getheader('Content-Length', 0))
 
                     if total_size == os.path.getsize(file_name):
                         logging.info(
@@ -96,7 +97,7 @@ def download_urls(urls, num_threads):
 
 def main():
     # List of files to read URLs from
-    url_files = ["fr_urls_part_aa", "fr_urls_part_ab"]
+    url_files = ["fr_urls_5000.txt"]
     
     urls = []
     for file_name in url_files:
