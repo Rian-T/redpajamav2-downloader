@@ -39,7 +39,7 @@ def download_url(url, max_retries=5):
                     capture_output=True,
                     text=True
                 )
-                if result.returncode == 0:
+                if result.returncode == 0 and result.stderr:
                     total_size = int(result.stderr.split("Length: ")[1].split(" ")[0])
 
                 if total_size == os.path.getsize(file_name):
@@ -63,10 +63,10 @@ def download_url(url, max_retries=5):
 
             if result.returncode == 0:
                 return True
-            elif "429 Too Many Requests" in result.stderr:
+            elif result.stderr and "429 Too Many Requests" in result.stderr:
                 raise Exception("429 Too Many Requests")
 
-            raise Exception(result.stderr)
+            raise Exception(result.stderr if result.stderr else "Unknown error")
 
         except Exception as e:
             if "429 Too Many Requests" in str(e):
@@ -104,7 +104,7 @@ def main():
             urls.extend([url.strip() for url in file.readlines()])
 
     # Initial download attempt with 64 threads
-    results = download_urls(urls, 64)
+    results = download_urls(urls[10000:], 64)
 
     # Collect failed downloads
     failed_urls = [url for url, success in zip(urls, results) if not success]
